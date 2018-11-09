@@ -24,8 +24,6 @@ services:
     image: acim/go-reflex
     container_name: app
     depends_on:
-      - registrator
-    environment:
-      - SERVICE_NAME=app
+      - consul
     volumes:
       - ./:/app

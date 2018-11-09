@@ -2,24 +2,22 @@ package main
 
 import (
 	"fmt"
+	"time"
 
-	"github.com/hashicorp/consul/api"
+	"github.com/spf13/viper"
+	_ "github.com/spf13/viper/remote"
 )
 
 func main() {
-	c := api.DefaultConfig()
-	c.Address = "consul:8500"
-	consul, err := api.NewClient(c)
-	if err != nil {
-		panic(err)
+	viper.AddRemoteProvider("consul", "consul:8500", "config/app")
+	viper.SetConfigType("yaml")
+
+	for {
+		err := viper.ReadRemoteConfig()
+		if err != nil {
+			fmt.Println("Please set key config/app in Consul with YML ")
+		}
+		fmt.Println(viper.Get("port"))
+		time.Sleep(5 * time.Second)
 	}
-
-	services, _, err := consul.Catalog().Service("app", "", &api.QueryOptions{})
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(services)
-
-	select {}
 }
